@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
+import fr.yahoo.diabolomenthe75005.RollPlayGameServer.MessageServer.MessageServer;
 import fr.yahoo.diabolomenthe75005.RollPlayGameServer.Player.Player;
 
 public class RollPlayGameServer {
@@ -18,6 +19,7 @@ public class RollPlayGameServer {
          server = new Server(); 
          Kryo kryo = server.getKryo();
          kryo.register(Player.class);
+         kryo.register(MessageServer.class);
          server.addListener(new Listener()
          {
               public void connected (Connection connection){
@@ -31,9 +33,9 @@ public class RollPlayGameServer {
                        annonce.message = "le joueur : vient de se connecter !";
                        server.sendToAllTCP(annonce);//on envoie l'objet à tous les joueurs
                        }
-                   if (object instanceof String){
-                	   System.out.println(object);
-                	   server.sendToAllTCP(object);
+                   if (object instanceof MessageServer){
+                	   System.out.println(((MessageServer)object).getMessage());
+                	   server.sendToAllTCP((MessageServer)object);
                    }
                }                 
          });
