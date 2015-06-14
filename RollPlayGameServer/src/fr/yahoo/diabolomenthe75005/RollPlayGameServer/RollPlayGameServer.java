@@ -18,29 +18,27 @@ public class RollPlayGameServer {
     public RollPlayGameServer () throws IOException {
          server = new Server(); 
          Kryo kryo = server.getKryo();
-         kryo.register(Player.class);
          kryo.register(MessageServer.class);
          server.addListener(new Listener()
          {
               public void connected (Connection connection){
                    nbreConnexions = nbreConnexions + 1;
+                   System.out.println("Connexion détecté");
               }
               public void received (Connection c, Object object){
-                   if (object instanceof Player)
-                     {
-                       /* on prépare le message de retour à tous les joueurs*/
-                       Player annonce = new Player();
-                       annonce.message = "le joueur : vient de se connecter !";
-                       server.sendToAllTCP(annonce);//on envoie l'objet à tous les joueurs
-                       }
                    if (object instanceof MessageServer){
                 	   System.out.println(((MessageServer)object).getMessage());
-                	   server.sendToAllTCP((MessageServer)object);
+                	   server.sendToAllTCP(object);
+                	   c.sendTCP(object);
                    }
-               }                 
+               }
+              public void disconnected(Connection connexion){
+            	System.out.println("Disconnected");  
+              }
          });
-   server.bind(port);
+   server.bind(port,port+1);
    server.start();
+
     }
 
    public static void main(String[] args) throws IOException {
